@@ -5,26 +5,48 @@ mod elves;
 
 fn main()
 {
-    let elf_vec = vec![elves::Elf::new(vec![1000,2000,3000]),elves::Elf::new(vec![4000]), elves::Elf::new(vec![5000,6000]), elves::Elf::new(vec![7000,8000,9000]), elves::Elf::new(vec![10000])];
-    for elf in &elf_vec
-    {
-        println!("Elf :");
-        elf.print_inventory()
-    }
-
+    // Variables
+    let mut vec_elf : Vec<elves::Elf> = Vec::new();
     let mut file;
+
     // Checking if the file is found.
     match File::open("elves") {
         Ok(actualfile) => {
             file = actualfile;
         }
         Err(fileerr) => {
-            panic!("Could not open file 'elves' : {}", fileerr)
+            panic!("Could not open file 'elves': {}", fileerr)
         }
     };
 
     // There will be content if the file is read so we unwrap.
     let mut file_content = String::new();
     file.read_to_string(&mut file_content).unwrap();
-    println!("{}", file_content);
+
+    // Filtering the given string into multiple vectors
+    let mut s = String::new();
+    let mut vec_kcal: Vec<u64> = Vec::new();
+    for ch in file_content.chars() {
+        if ch == '\n' {
+            match s.parse() {
+                Ok(parsed_num) => {
+                    vec_kcal.push(parsed_num);
+                }
+                Err(_) => {
+                    vec_elf.push(elves::Elf::new(vec_kcal));
+                    vec_kcal = Vec::new();
+                }
+            }
+            s.clear();
+        } else {
+            if ch != '\r' {
+                s.push(ch)
+            }
+        }
+    }
+
+    for elf in &vec_elf {
+        println!("Elf: ");
+        elf.print_inventory();
+    }
 }
