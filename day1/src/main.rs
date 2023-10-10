@@ -1,28 +1,30 @@
-pub struct Elf {
-    inventory : Vec<u64>,
-}
+use std::fs::File;
+use std::io::Read;
+mod elves;
 
-impl Elf {
-    pub fn new(vec : Vec<u64>) -> Elf {
-        Elf {
-            inventory: vec,
-        }
-    }
-
-    pub fn print_inventory(& self)
-    {
-        for inv in &self.inventory {
-            println!("{}",inv)
-        }
-    }
-}
 
 fn main()
 {
-    let elves = vec![Elf::new(vec![1000,2000,3000]),Elf::new(vec![4000]), Elf::new(vec![5000,6000]), Elf::new(vec![7000,8000,9000]), Elf::new(vec![10000])];
-    for elf in &elves
+    let elf_vec = vec![elves::Elf::new(vec![1000,2000,3000]),elves::Elf::new(vec![4000]), elves::Elf::new(vec![5000,6000]), elves::Elf::new(vec![7000,8000,9000]), elves::Elf::new(vec![10000])];
+    for elf in &elf_vec
     {
         println!("Elf :");
         elf.print_inventory()
     }
+
+    let mut file;
+    // Checking if the file is found.
+    match File::open("elves") {
+        Ok(actualfile) => {
+            file = actualfile;
+        }
+        Err(fileerr) => {
+            panic!("Could not open file 'elves' : {}", fileerr)
+        }
+    };
+
+    // There will be content if the file is read so we unwrap.
+    let mut file_content = String::new();
+    file.read_to_string(&mut file_content).unwrap();
+    println!("{}", file_content);
 }
