@@ -50,6 +50,15 @@ fn main()
     for elf in &vec_elf {
         vec_total.push(elf.get_total());
     }
-    // Printing the max
-    println!("Most Calories: {}", vec_total.iter().max().unwrap());
+    // Printing the maxs
+    let mut three_max : u64 = 0; 
+    vec_total.sort_by(|a, b| b.cmp(a));
+    println!("Most Calories: {}", vec_total[0]);
+    for (i, kcal) in vec_total.iter().enumerate() {
+        if i > 2 {
+            break;
+        }
+        three_max += kcal;
+    }
+    println!("Max Three Calories: {}", three_max);
 }
