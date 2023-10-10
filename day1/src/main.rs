@@ -45,8 +45,11 @@ fn main()
         }
     }
 
+    // Gathering all the total kcal onto a vector
+    let mut vec_total: Vec<u64> = Vec::new();
     for elf in &vec_elf {
-        println!("Elf: ");
-        elf.print_inventory();
+        vec_total.push(elf.get_total());
     }
+    // Printing the max
+    println!("Most Calories: {}", vec_total.iter().max().unwrap());
 }

@@ -9,10 +9,8 @@ impl Elf {
         }
     }
 
-    pub fn print_inventory(& self)
+    pub fn get_total(& self) -> u64
     {
-        for inv in &self.inventory {
-            println!("{}",inv)
-        }
+        self.inventory.iter().sum()
     }
 }
