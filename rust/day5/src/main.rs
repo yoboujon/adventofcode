@@ -66,7 +66,7 @@ fn analyse(str: &String) -> (u32, Vec<(u32, u32, u32)>, Vec<Vec<char>>) {
     )
 }
 
-fn first_part(cmd: &Vec<(u32, u32, u32)>, crates: &Vec<Vec<char>>) -> String
+fn part(part_num: i32, cmd: &Vec<(u32, u32, u32)>, crates: &Vec<Vec<char>>) -> String
 {
     // Algorithm
     let mut boxes = crates.clone();
@@ -75,6 +75,9 @@ fn first_part(cmd: &Vec<(u32, u32, u32)>, crates: &Vec<Vec<char>>) -> String
         for _ in 0..(operation.0) {
             moving_crates.push(boxes[(operation.1-1) as usize].last().unwrap().to_owned());
             boxes[(operation.1-1) as usize].pop();
+        }
+        if (operation.0 > 1) && (part_num ==2) {
+            moving_crates.reverse();
         }
         for mv in moving_crates {
             boxes[(operation.2-1) as usize].push(mv);
@@ -93,5 +96,6 @@ fn main() {
     let file_content = read_to_string("input").unwrap();
     let (max, cmd, crates) = analyse(&file_content);
     println!("max = {}\ncmd = {:?}\ncrates = {:?}", max, cmd, crates);
-    println!("First part: {:?}", first_part(&cmd, &crates));
+    println!("First part: {:?}", part(1, &cmd, &crates));
+    println!("Second part: {:?}", part(2, &cmd, &crates));
 }
