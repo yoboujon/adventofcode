@@ -1,10 +1,10 @@
-#[derive(Debug)]
+#[derive(Clone)]
 pub struct File {
     size: u64,
     name: String,
 }
 
-#[derive(Debug)]
+#[derive(Clone)]
 pub struct Directory {
     name: String,
     index: usize,
@@ -14,6 +14,7 @@ pub struct Directory {
     sublevel: u64,
 }
 
+#[derive(Clone)]
 pub struct Disk {
     dir_list: Vec<Directory>,
     selected_dir: usize,
@@ -36,6 +37,10 @@ impl Directory {
             size: size,
             name: name.to_string(),
         });
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
     }
 }
 
@@ -65,18 +70,23 @@ impl Disk {
     }
 
     pub fn change_directory(&mut self, name: &str) {
-        let found_index: usize;
-        match self.dir_list.iter_mut().find(|dir| dir.name == name) {
-            None => {
-                println!("There is no such folder '{}' in the disk.", name);
-                return;
-            }
-            Some(found_dir) => found_index = found_dir.index,
+        let mut found_indexes: Vec<usize> = Vec::new();
+        let found: Vec<&mut Directory> = self
+            .dir_list
+            .iter_mut()
+            .filter(|dir| dir.name == name)
+            .collect();
+        if found.is_empty() {
+            println!("There is no such folder '{}' in the disk.", name);
+            return;
+        }
+        for dir in found.iter() {
+            found_indexes.push(dir.index)
         }
         match self.dir_list[self.selected_dir]
             .child
             .iter()
-            .find(|&&index| index == found_index)
+            .find(|&index| found_indexes.contains(index))
         {
             None => println!(
                 "There is no such folder '{}' in the directory '{}'",
@@ -107,5 +117,35 @@ impl Disk {
         for f in dir.files.iter() {
             println!("{}\tFile: {}, size: {}", space, f.name, f.size);
         }
+    }
+
+    pub fn get_path(&self, dir: &Directory) -> String {
+        let mut path = dir.name.to_string()+"/";
+        let mut index = dir.parent;
+        while index != 0 {
+            path += &(self.dir_list[index].name);
+            path += "/";
+            index = self.dir_list[index].parent;
+        }
+        path.chars().rev().collect()
+    }
+
+    pub fn get_directories(&self) -> Vec<&Directory> {
+        let mut dirvec: Vec<&Directory> = Vec::new();
+        for dir in self.dir_list.iter() {
+            dirvec.push(dir);
+        }
+        dirvec
+    }
+
+    pub fn get_size(&self, dir: &Directory) -> u64 {
+        let mut size = 0;
+        for f in &dir.files {
+            size += f.size;
+        }
+        for index in &dir.child {
+            size += self.get_size(&self.dir_list[*index]);
+        }
+        size
     }
 }
