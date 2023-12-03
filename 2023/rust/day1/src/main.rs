@@ -37,14 +37,13 @@ fn convert_spelled_digit(txt: &str) -> String {
             if let Some(i) = contains_digit(&return_string,str_index) {
                 // Transforming the string
                 let (first, last) = return_string.split_at(str_index);
-                let (_, last) = last.split_at(DIGITS[i].len());
+                let (_, last) = last.split_at(1);
                 temp_string = first.to_string() + digits_char[i].to_string().as_str() + last;
                 break;
             }
         }
         return_string = temp_string;
     }
-    println!("{}",return_string);
     return_string
 }
 
@@ -64,7 +63,9 @@ fn part2(str: &String) -> Vec<u64> {
     for l in line {
         num_vec.push(algorithm(convert_spelled_digit(l)));
     }
-    println!("{:?}", num_vec);
+    for num in &num_vec {
+        println!("{}", num);
+    }
     num_vec.iter().map(|str| str.parse().unwrap()).collect()
 }
 
@@ -87,7 +88,7 @@ fn algorithm(str: String) -> String {
 }
 
 fn main() {
-    let str = read_to_string("example2").unwrap();
+    let str = read_to_string("input").unwrap();
     let part1_result: u64 = part1(&str).iter().sum();
     println!("part1 result: {}", part1_result);
     let part2_result: u64 = part2(&str).iter().sum();
